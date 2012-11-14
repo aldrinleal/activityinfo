@@ -68,7 +68,9 @@ public class ActivityInfoEntryPoint implements EntryPoint {
         injector.getHistoryManager();
         
     	injector.createOfflineController();	
-    	injector.createPromptOfflineDialog();
+    	
+    	// disabled until we get offline/online mode working without hitch
+    	//injector.createPromptOfflineDialog();
 
         createCaches(injector);
 

@@ -5,7 +5,7 @@
     <groupId>org.activityinfo</groupId>
     <artifactId>firefox-addon</artifactId>
     <packaging>pom</packaging>
-    <version>0.5</version>
+    <version>0.7</version>
  
     <name>ActivityInfo</name>
 
@@ -18,7 +18,7 @@
                     <descriptors>
                         <descriptor>src/main/assembly/xpi.xml</descriptor>
                     </descriptors>
-                    <finalName>${project.name}-${project.version}.xpi</finalName>
+                    <finalName>${project.name}.xpi</finalName>
                 </configuration>
                 <executions>
                     <execution>
@@ -38,7 +38,7 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <move file="${project.build.directory}/${project.name}-${project.version}.xpi-xpi.zip" tofile="${project.build.directory}/${project.name}-${project.version}.xpi" />
+                                <move file="${project.build.directory}/${project.name}.xpi-xpi.zip" tofile="${project.build.directory}/${project.name}.xpi" />
                             </target>
                         </configuration>
                         <goals>

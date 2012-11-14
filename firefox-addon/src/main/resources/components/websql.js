@@ -400,7 +400,7 @@ consoleService.logStringMessage("Web SQL starting up!");
 
 	function WebSqlFactory() {};
 	WebSqlFactory.prototype = {
-		classID:		Components.ID("{743f1d40-8005-11e0-b278-0800200c9a66}"),
+		classID:		Components.ID("{6F7D3F6A-2E43-11E2-BF28-04D96088709B}"),
 		QueryInterface:	XPCOMUtils.generateQI([Ci.nsIDOMGlobalPropertyInitializer]),
 		init:			function ws_init(aWindow)
 		{
@@ -410,7 +410,7 @@ consoleService.logStringMessage("Web SQL starting up!");
 				return new Database(dbName, dbVersion, dbDescription, dbSize, window);
 			}
 			openDatabase.toString = function(){return 'function openDatabase() {\n    [native code]\n}';};
-			
+			openDatabase.aiVersion = 1;
 			return openDatabase;
 		}
 	};
