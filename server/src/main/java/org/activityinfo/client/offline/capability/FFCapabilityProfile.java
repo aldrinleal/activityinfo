@@ -10,7 +10,6 @@ import org.activityinfo.shared.auth.AuthenticatedUser;
 import com.bedatadriven.rebar.appcache.client.AppCache;
 import com.bedatadriven.rebar.appcache.client.AppCache.Status;
 import com.bedatadriven.rebar.appcache.client.AppCacheFactory;
-import com.bedatadriven.rebar.async.NullCallback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -39,14 +38,12 @@ public class FFCapabilityProfile extends OfflineCapabilityProfile {
 
 
 	@Override
-	public void acquirePermission(final AsyncCallback<Void> callback) {
-		doInstallViaAppsApi(NullCallback.forVoid());
-		
+	public void acquirePermission(final AsyncCallback<Void> callback) {		
 		final AppCache appCache = AppCacheFactory.get();
 		if(appCache.getStatus() != Status.UNCACHED) {
 			callback.onSuccess(null);
 		} else {
-			FFPermissionsDialog dialog = new FFPermissionsDialog(callback);
+			FFPermissionsDialog dialog = new FFPermissionsDialog();
 			dialog.show();
 		}
 	}
