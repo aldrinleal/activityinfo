@@ -33,7 +33,9 @@ public class GetSiteHistory implements Command<GetSiteHistoryResult> {
 		}
 
 		public GetSiteHistoryResult(List<SiteHistoryDTO> siteHistories) {
-			this.siteHistories = siteHistories;
+			if (siteHistories != null) {
+				this.siteHistories = siteHistories;
+			}
 		}
 
 		public List<SiteHistoryDTO> getSiteHistories() {
