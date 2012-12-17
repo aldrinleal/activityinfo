@@ -1,13 +1,15 @@
 package org.activityinfo.client.page.entry;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.activityinfo.client.dispatch.Dispatcher;
 import org.activityinfo.client.i18n.I18N;
-import org.activityinfo.shared.command.GetSiteHistory.GetSiteHistoryResult;
 import org.activityinfo.shared.dto.AttributeDTO;
 import org.activityinfo.shared.dto.IndicatorDTO;
+import org.activityinfo.shared.dto.LocationDTO;
 import org.activityinfo.shared.dto.SchemaDTO;
 import org.activityinfo.shared.dto.SiteDTO;
 import org.activityinfo.shared.dto.SiteHistoryDTO;
@@ -15,15 +17,20 @@ import org.activityinfo.shared.dto.SiteHistoryDTO;
 import com.google.common.collect.Lists;
 
 public class SiteHistoryRenderer {
+	private final Dispatcher dispatcher;
+	
+	public SiteHistoryRenderer(Dispatcher dispatcher) {
+		this.dispatcher = dispatcher;
+	}
+	
 
-	public String render(SchemaDTO schema, SiteDTO site, GetSiteHistoryResult historyResult) {
+	public String render(SchemaDTO schema, List<LocationDTO> locations, SiteDTO site, List<SiteHistoryDTO> histories) {
 		StringBuilder html = new StringBuilder();
 		
-		List<SiteHistoryDTO> histories = historyResult.getSiteHistories();
 		if (histories.size() > 0) {
 			List<String> historyHtmlItems = Lists.newArrayList();
 			
-			Context ctx = new Context(schema, histories.get(0).getJsonMap());
+			Context ctx = new Context(schema, locations, histories.get(0).getJsonMap());
 			boolean first = true;
 			for (SiteHistoryDTO history : histories) {
 				ctx.setHistory(history);
@@ -77,11 +84,11 @@ public class SiteHistoryRenderer {
 		SchemaDTO schema = ctx.getSchema();
 		
 		String key = entry.getKey();
-		Object oldValue = state.get(key);
-		Object newValue = entry.getValue();
+		final Object oldValue = state.get(key);
+		final Object newValue = entry.getValue();
 		state.put(key, newValue);
 		
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		
 		// basic
 		if (key.equals("date1")) {
@@ -98,25 +105,29 @@ public class SiteHistoryRenderer {
 		
 		// schema lookups
 		else if (key.equals("locationId")) {
-			// TODO find location lookup name
-			addValues(sb, I18N.CONSTANTS.location(), oldValue, newValue);
+			String oldName = null;
+			if (oldValue != null) {
+				oldName = ctx.getLocation(toInt(oldValue)).getName();
+			}
+			String newName = ctx.getLocation(toInt(newValue)).getName();
+			addValues(sb, I18N.CONSTANTS.location(), oldName, newName);
 		}
 		
 		else if (key.equals("projectId")) {
 			String oldName = null;
 			if (oldValue != null) {
-				oldName = schema.getProjectById(Integer.parseInt(oldValue.toString())).getName();
+				oldName = schema.getProjectById(toInt(oldValue)).getName();
 			}
-			String newName = schema.getProjectById(Integer.parseInt(newValue.toString())).getName();
+			String newName = schema.getProjectById(toInt(newValue)).getName();
 			addValues(sb, I18N.CONSTANTS.project(), oldName, newName);
 		}		
 
 		else if (key.equals("partnerId")) {
 			String oldName = null;
 			if (oldValue != null) {
-				oldName = schema.getPartnerById(Integer.parseInt(oldValue.toString())).getName();
+				oldName = schema.getPartnerById(toInt(oldValue)).getName();
 			}
-			String newName = schema.getPartnerById(Integer.parseInt(newValue.toString())).getName();
+			String newName = schema.getPartnerById(toInt(newValue)).getName();
 			addValues(sb, I18N.CONSTANTS.partner(), oldName, newName);
 		}		
 
@@ -136,6 +147,7 @@ public class SiteHistoryRenderer {
 				sb.append(I18N.MESSAGES.siteHistoryAttrRemove(dto.getName()));
 			}
 		}
+		
 		
 		// fallback
 		else {
@@ -180,18 +192,30 @@ public class SiteHistoryRenderer {
         return oldValue.equals(newValue);
     }
     
+    private int toInt(Object val) {
+    	return Integer.parseInt(val.toString());
+    }
+    
     private class Context {
     	private SchemaDTO schema;
+    	private Map<Integer, LocationDTO> locations;
     	private SiteHistoryDTO history;
     	private Map<String, Object> state;
 
-		public Context(SchemaDTO schema, Map<String, Object> state) {
+		public Context(SchemaDTO schema, List<LocationDTO> locations, Map<String, Object> state) {
 			super();
 			this.schema = schema;
+			this.locations = new HashMap<Integer, LocationDTO>();
+			for (LocationDTO dto : locations) {
+				this.locations.put(dto.getId(), dto);
+			}
 			this.state = state;
 		}
 		public SchemaDTO getSchema() {
 			return schema;
+		}
+		public LocationDTO getLocation(Integer locationId) {
+			return locations.get(locationId);
 		}
 		public SiteHistoryDTO getHistory() {
 			return history;

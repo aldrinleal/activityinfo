@@ -41,5 +41,16 @@ public class GetSiteHistory implements Command<GetSiteHistoryResult> {
 		public List<SiteHistoryDTO> getSiteHistories() {
 			return siteHistories;
 		}
+		
+		public List<Integer> collectLocationIds() {
+			List<Integer> ids = Lists.newArrayList();
+			for (SiteHistoryDTO dto : getSiteHistories()) {
+				Object id = dto.getJsonMap().get("locationId");
+				if (id != null) {
+					ids.add(Integer.parseInt(id.toString()));
+				}
+			}
+			return ids;
+		}
 	}
 }
