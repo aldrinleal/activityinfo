@@ -66,6 +66,6 @@ public class SiteHistoryTab extends TabItem {
 	}
 
 	private void render(SchemaDTO schema, List<LocationDTO> locations, SiteDTO site, List<SiteHistoryDTO> histories) {
-		content.setHtml(new SiteHistoryRenderer(dispatcher).render(schema, locations, site, histories));
+		content.setHtml(new SiteHistoryRenderer().render(schema, locations, site, histories));
 	}
 }

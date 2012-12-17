@@ -17,12 +17,6 @@ import org.activityinfo.shared.dto.SiteHistoryDTO;
 import com.google.common.collect.Lists;
 
 public class SiteHistoryRenderer {
-	private final Dispatcher dispatcher;
-	
-	public SiteHistoryRenderer(Dispatcher dispatcher) {
-		this.dispatcher = dispatcher;
-	}
-	
 
 	public String render(SchemaDTO schema, List<LocationDTO> locations, SiteDTO site, List<SiteHistoryDTO> histories) {
 		StringBuilder html = new StringBuilder();
