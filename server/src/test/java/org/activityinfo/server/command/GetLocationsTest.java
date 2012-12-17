@@ -2,6 +2,7 @@ package org.activityinfo.server.command;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.activityinfo.server.database.OnDataSet;
@@ -22,6 +23,7 @@ public class GetLocationsTest extends CommandTestCase2 {
 		
 		LocationDTO location = execute(new GetLocations(1)).getLocation();
 		
+		assertThat(location, notNullValue());
 		assertThat(location.getName(), equalTo("Penekusu Kivu"));
 		assertThat(location.getAxe(), nullValue());
 		assertThat(location.getAdminEntity(1).getName(), equalTo("Sud Kivu"));

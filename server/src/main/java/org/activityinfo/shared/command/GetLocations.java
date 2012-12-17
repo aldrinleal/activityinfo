@@ -7,43 +7,43 @@ import org.activityinfo.shared.command.GetLocations.GetLocationsResult;
 import org.activityinfo.shared.command.result.CommandResult;
 import org.activityinfo.shared.dto.LocationDTO;
 
-import com.google.common.collect.Lists;
-
 public class GetLocations implements Command<GetLocationsResult> {
+	private static final long serialVersionUID = 6998517531187983518L;
+	
 	private List<Integer> locationIds;
 
 	public GetLocations() {
 		 locationIds = new ArrayList<Integer>();
 	}
 	
-	public GetLocations(int id) {
+	public GetLocations(Integer id) {
 		locationIds = new ArrayList<Integer>();
-		locationIds.add(id);
+		if (id != null) {
+			locationIds.add(id);
+		}
 	}
 
 	public GetLocations(List<Integer> ids) {
 		locationIds = ids;
 	}
 
-	public int getLocationId() {
-		return locationIds.get(0);
-	}
-
 	public List<Integer> getLocationIds() {
 		return locationIds;
 	}
 
-	public void setLocationId(int locationId) {
-		locationIds = new ArrayList<Integer>();
-		locationIds.add(locationId);
-	}
-	
 	public void setLocationIds(List<Integer> ids) {
 		locationIds = ids;
 	}
+
+	public boolean hasLocationIds() {
+		return (locationIds != null && locationIds.size() > 0);
+	}
+
 	
 	public static class GetLocationsResult implements CommandResult {
-		private List<LocationDTO> locations = Lists.newArrayList();
+		private static final long serialVersionUID = 4418411241161619590L;
+		
+		private List<LocationDTO> locations = new ArrayList<LocationDTO>();
 
 		public GetLocationsResult() {
 		}
@@ -58,8 +58,16 @@ public class GetLocations implements Command<GetLocationsResult> {
 			return locations;
 		}
 		
+		public boolean hasLocations() {
+			return (locations != null && locations.size() > 0);
+		}
+		
 		public LocationDTO getLocation() {
-			return locations.get(0);
+			if (locations != null && locations.size() > 0) {
+				return locations.get(0);
+			} else {
+				return null;
+			}
 		}
 	}
 }

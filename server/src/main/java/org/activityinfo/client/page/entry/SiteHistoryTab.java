@@ -44,23 +44,25 @@ public class SiteHistoryTab extends TabItem {
 			}
 			@Override
 			public void onSuccess(final GetSiteHistoryResult historyResult) {
-				dispatcher.execute(new GetLocations(historyResult.collectLocationIds()), new AsyncCallback<GetLocationsResult>() {
-					@Override
-					public void onFailure(Throwable caught) {
-					}
-					@Override
-					public void onSuccess(final GetLocationsResult locationsResult) {
-						dispatcher.execute(new GetSchema(), new AsyncCallback<SchemaDTO>() {
-							@Override
-							public void onFailure(Throwable caught) {
-							}
-							@Override
-							public void onSuccess(SchemaDTO schema) {
-								render(schema, locationsResult.getLocations(), site, historyResult.getSiteHistories());
-							}
-						});
-					}
-				});
+				if (historyResult.hasHistories()) {
+					dispatcher.execute(new GetLocations(historyResult.collectLocationIds()), new AsyncCallback<GetLocationsResult>() {
+						@Override
+						public void onFailure(Throwable caught) {
+						}
+						@Override
+						public void onSuccess(final GetLocationsResult locationsResult) {
+							dispatcher.execute(new GetSchema(), new AsyncCallback<SchemaDTO>() {
+								@Override
+								public void onFailure(Throwable caught) {
+								}
+								@Override
+								public void onSuccess(SchemaDTO schema) {
+									render(schema, locationsResult.getLocations(), site, historyResult.getSiteHistories());
+								}
+							});
+						}
+					});
+				}
 			}
 		});
 	}

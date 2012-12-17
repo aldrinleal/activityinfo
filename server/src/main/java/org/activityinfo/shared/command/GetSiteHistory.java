@@ -42,6 +42,10 @@ public class GetSiteHistory implements Command<GetSiteHistoryResult> {
 			return siteHistories;
 		}
 		
+		public boolean hasHistories() {
+			return (siteHistories != null && siteHistories.size() > 0);
+		}
+		
 		public List<Integer> collectLocationIds() {
 			List<Integer> ids = Lists.newArrayList();
 			for (SiteHistoryDTO dto : getSiteHistories()) {
