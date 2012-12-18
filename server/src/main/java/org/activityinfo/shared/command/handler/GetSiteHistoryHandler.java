@@ -1,5 +1,6 @@
 package org.activityinfo.shared.command.handler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.activityinfo.shared.command.GetSiteHistory;
@@ -11,7 +12,6 @@ import com.bedatadriven.rebar.sql.client.SqlResultSet;
 import com.bedatadriven.rebar.sql.client.SqlResultSetRow;
 import com.bedatadriven.rebar.sql.client.SqlTransaction;
 import com.bedatadriven.rebar.sql.client.query.SqlQuery;
-import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GetSiteHistoryHandler implements CommandHandlerAsync<GetSiteHistory, GetSiteHistoryResult> {
@@ -34,7 +34,7 @@ public class GetSiteHistoryHandler implements CommandHandlerAsync<GetSiteHistory
 				.execute(context.getTransaction(), new SqlResultCallback() {
 					@Override
 					public void onSuccess(SqlTransaction tx, SqlResultSet results) {
-						List<SiteHistoryDTO> siteHistories = Lists.newArrayList();
+						List<SiteHistoryDTO> siteHistories = new ArrayList<SiteHistoryDTO>();
 						for (SqlResultSetRow row : results.getRows()) {
 							SiteHistoryDTO siteHistory = new SiteHistoryDTO();
 							siteHistory.setId(row.getInt("id"));

@@ -1,11 +1,11 @@
 package org.activityinfo.shared.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.bedatadriven.rebar.sql.client.SqlResultSetRow;
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 public class LocationDTO extends BaseModelData implements EntityDTO, HasAdminEntityValues {
 	
@@ -99,7 +99,7 @@ public class LocationDTO extends BaseModelData implements EntityDTO, HasAdminEnt
 	}
 	
 	public List<AdminEntityDTO> getAdminEntities() {
-		List<AdminEntityDTO> list = Lists.newArrayList();
+		List<AdminEntityDTO> list = new ArrayList<AdminEntityDTO>();
 		for(String property : getPropertyNames()) {
 			if(property.startsWith(AdminLevelDTO.PROPERTY_PREFIX)) {
 				AdminEntityDTO entity = (AdminEntityDTO)get(property);

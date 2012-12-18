@@ -1,11 +1,12 @@
 package org.activityinfo.client.page.entry;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-import org.activityinfo.client.dispatch.Dispatcher;
 import org.activityinfo.client.i18n.I18N;
 import org.activityinfo.shared.dto.AttributeDTO;
 import org.activityinfo.shared.dto.IndicatorDTO;
@@ -14,21 +15,23 @@ import org.activityinfo.shared.dto.SchemaDTO;
 import org.activityinfo.shared.dto.SiteDTO;
 import org.activityinfo.shared.dto.SiteHistoryDTO;
 
-import com.google.common.collect.Lists;
-
 public class SiteHistoryRenderer {
+	private static Logger LOGGER = Logger.getLogger(SiteHistoryRenderer.class.getName());
 
 	public String render(SchemaDTO schema, List<LocationDTO> locations, SiteDTO site, List<SiteHistoryDTO> histories) {
+		LOGGER.finer("rendering "+histories.size()+" history entries");
+		
 		StringBuilder html = new StringBuilder();
 		
 		if (histories.size() > 0) {
-			List<String> historyHtmlItems = Lists.newArrayList();
+			List<String> historyHtmlItems = new ArrayList<String>();
 			
 			Context ctx = new Context(schema, locations, histories.get(0).getJsonMap());
 			boolean first = true;
 			for (SiteHistoryDTO history : histories) {
 				ctx.setHistory(history);
 				StringBuilder item = new StringBuilder();
+				
 				item.append("<p>");
 				if (first) {
 					// TODO get values from site. User & date of first historyentry are not always from creation but from first update
@@ -41,6 +44,7 @@ public class SiteHistoryRenderer {
 					item.append(renderUpdates(ctx));
 				}
 				item.append("</p>");
+				
 				historyHtmlItems.add(item.toString());
 			}
 			
@@ -50,6 +54,7 @@ public class SiteHistoryRenderer {
 				html.append(historyItem);
 			}
 		}
+		
 		return html.toString();
 	}
 
@@ -58,7 +63,10 @@ public class SiteHistoryRenderer {
 		header.append("<span style='color: #15428B; font-weight: bold;'>");
 		header.append(msg);
 		header.append("</span><br/>");
-		return header.toString();
+		
+		String html = header.toString();
+		LOGGER.finest("adding header: "+html);
+		return html;
 	}
 	
 	private String renderUpdates(Context ctx) {
@@ -148,7 +156,9 @@ public class SiteHistoryRenderer {
 			addValues(sb, key, oldValue, newValue);
 		}
 		
-		return sb.toString();
+		String html = sb.toString();
+		LOGGER.finest("adding update: "+html);
+		return html;
 	}
 
 	private void addValues(StringBuilder sb, String key, Object oldValue, Object newValue) {

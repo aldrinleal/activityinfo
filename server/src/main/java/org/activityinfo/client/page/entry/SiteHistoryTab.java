@@ -1,9 +1,11 @@
 package org.activityinfo.client.page.entry;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.activityinfo.client.dispatch.Dispatcher;
 import org.activityinfo.client.i18n.I18N;
+import org.activityinfo.client.report.editor.pivotTable.DimensionPruner;
 import org.activityinfo.shared.command.GetLocations;
 import org.activityinfo.shared.command.GetLocations.GetLocationsResult;
 import org.activityinfo.shared.command.GetSchema;
@@ -20,7 +22,8 @@ import com.extjs.gxt.ui.client.widget.TabItem;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SiteHistoryTab extends TabItem {
-
+	private static Logger LOGGER = Logger.getLogger(SiteHistoryTab.class.getName());
+	
 	private final Html content;
 	private final Dispatcher dispatcher;
 	
@@ -68,6 +71,7 @@ public class SiteHistoryTab extends TabItem {
 	}
 
 	private void render(SchemaDTO schema, List<LocationDTO> locations, SiteDTO site, List<SiteHistoryDTO> histories) {
+		LOGGER.fine("showing sitehistory for site "+site.getId());
 		content.setHtml(new SiteHistoryRenderer().render(schema, locations, site, histories));
 	}
 }
