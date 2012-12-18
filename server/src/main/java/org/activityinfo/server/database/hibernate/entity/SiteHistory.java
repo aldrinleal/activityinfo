@@ -79,13 +79,13 @@ public class SiteHistory implements java.io.Serializable {
 		this.timeCreated = timeCreated;
 	}
 	
-    @Column(name = "initial", nullable = false)
+	@Basic
     public boolean isInitial() {
         return this.initial;
     }
 
-    public void setInitial(boolean initial) {
-        this.initial = initial;
+    public void setInitial(boolean isInitial) {
+        this.initial = isInitial;
     }
 
 }

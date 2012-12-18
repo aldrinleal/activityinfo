@@ -10,10 +10,15 @@ import org.activityinfo.client.Log;
 import com.bedatadriven.rebar.time.calendar.LocalDate;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class JsonUtil {
 	
 	private JsonUtil() {}
+	
+	public static JsonObject parse(String json) {
+		return (JsonObject) new JsonParser().parse(json);
+	}
 	
 	public static JsonObject encodeMap(Map<String, Object> map) {
 		JsonObject root = new JsonObject();
