@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 
 import org.activityinfo.login.shared.AuthenticatedUser;
 import org.activityinfo.server.authentication.AuthCookieUtil;
@@ -29,20 +30,20 @@ import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 
 @Singleton
+@Path(HostController.ENDPOINT)
 public class HostController extends AbstractController {
     public static final String ENDPOINT = "/";
 
     private final DeploymentConfiguration deployConfig;
     
     @Inject
-    public HostController(Injector injector, Configuration templateCfg, DeploymentConfiguration deployConfig) {
-        super(injector, templateCfg);
+    public HostController(DeploymentConfiguration deployConfig) {
         this.deployConfig = deployConfig;
     }
 
     @Override
     @LogException(emailAlert = true)
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void onGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Authentication auth = getAuthentication(req);
             if("true".equals(req.getParameter("redirect"))) {

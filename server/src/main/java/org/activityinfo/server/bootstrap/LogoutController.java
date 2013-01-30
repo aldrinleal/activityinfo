@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 
 import org.activityinfo.login.shared.AuthenticatedUser;
 
@@ -20,16 +21,12 @@ import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 
 @Singleton
+@Path(LogoutController.ENDPOINT)
 public class LogoutController extends AbstractController {
     public static final String ENDPOINT = "/logout";
 
-    @Inject
-    public LogoutController(Injector injector, Configuration templateCfg) {
-        super(injector, templateCfg);
-    }
-
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void onGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         logUserOut(resp);
         resp.sendRedirect("/login");
     }

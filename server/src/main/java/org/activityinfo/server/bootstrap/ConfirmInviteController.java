@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 
 import org.activityinfo.server.authentication.AuthCookieUtil;
 import org.activityinfo.server.bootstrap.exception.IncompleteFormException;
@@ -29,17 +30,13 @@ import freemarker.template.Configuration;
 
 
 @Singleton
+@Path(ConfirmInviteController.ENDPOINT)
 public class ConfirmInviteController extends AbstractController {
     public static final String ENDPOINT = "/confirm";
 
-    @Inject
-    public ConfirmInviteController(Injector injector, Configuration templateCfg) {
-        super(injector, templateCfg);
-    }
-
     @Override
     @LogException(emailAlert = true)
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void onGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             User user = findUserByKey(req.getQueryString());
             ConfirmInvitePageModel model = new ConfirmInvitePageModel(user);
@@ -53,7 +50,7 @@ public class ConfirmInviteController extends AbstractController {
 
     @Override
     @LogException(emailAlert = true)
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void onPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         User user = null;
         try {

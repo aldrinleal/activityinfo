@@ -15,19 +15,12 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 
-import org.activityinfo.server.bootstrap.ConfirmInviteController;
 import org.activityinfo.server.bootstrap.model.ConfirmInvitePageModel;
 import org.activityinfo.server.bootstrap.model.InvalidInvitePageModel;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ConfirmInviteControllerTest extends ControllerTestCase {
-
-    @Before
-    public void setUp() {
-        controller = new ConfirmInviteController(injector, templateCfg);
-    }
-
+public class ConfirmInviteControllerTest extends ControllerTestCase<ConfirmInviteController> {
     public void fillOutForm() {
         req.addParameter("key", NEW_USER_KEY);
         req.addParameter("password", "mynewpassword123");

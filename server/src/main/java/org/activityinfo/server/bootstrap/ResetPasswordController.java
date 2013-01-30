@@ -11,6 +11,7 @@ import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 
 import org.activityinfo.server.authentication.SecureTokenGenerator;
 import org.activityinfo.server.bootstrap.model.ResetPasswordPageModel;
@@ -28,20 +29,16 @@ import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 
 @Singleton
+@Path(ResetPasswordController.ENDPOINT)
 public class ResetPasswordController extends AbstractController {
 	public static final String ENDPOINT = "/loginProblem";
 
-	private final MailSender mailer;
-
 	@Inject
-	public ResetPasswordController(Injector injector, Configuration templateCfg, MailSender mailer) {
-		super(injector, templateCfg);
-		this.mailer = mailer;
-	}
+	private MailSender mailer;
 
 	@Override
 	@LogException(emailAlert = true)
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+	protected void onGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		writeView(resp, req, new ResetPasswordPageModel());
 	}
@@ -49,7 +46,7 @@ public class ResetPasswordController extends AbstractController {
 	@Override
     @LogException(emailAlert = true)
     @Transactional
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void onPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
         	
             User user = findUserByEmail(req.getParameter("email"));

@@ -11,9 +11,11 @@ import java.util.Locale;
 import javax.persistence.NoResultException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.core.Context;
 
 import org.activityinfo.server.authentication.AuthCookieUtil;
 import org.activityinfo.server.bootstrap.exception.IncompleteFormException;
@@ -51,34 +53,38 @@ import freemarker.template.TemplateException;
  * @author Alex Bertram
  */
 @Singleton
-public class AbstractController extends HttpServlet {
-
-    private final Injector injector;
-    private final Configuration templateCfg;
+public class AbstractController {
+	@Inject
+    protected Injector injector;
+	
+	@Inject
+	protected Configuration templateCfg;
 
     private static final String GWT_CODE_SERVER_HOST = "gwt.codesvr";
-
-    @Inject
-    public AbstractController(Injector injector, Configuration templateCfg) {
-        this.injector = injector;
-        this.templateCfg = templateCfg;
-    }
 
     /**
      * Calls doGet. Wrapped in package visibility for testing.
      */
-    void callGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        doGet(req, resp);
+    @GET
+    void callGet(@Context HttpServletRequest req, @Context HttpServletResponse resp) throws IOException, ServletException {
+        onGet(req, resp);
+    }
+
+    protected void onGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    }
+
+    protected void onPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
     }
 
     /**
      * Calls doPost. Wrapped in package visibilty for testing.
      */
-    void callPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        doPost(req, resp);
+    @POST
+    void callPost(@Context HttpServletRequest req, @Context HttpServletResponse resp) throws IOException, ServletException {
+        onPost(req, resp);
     }
 
-	protected void writeView(HttpServletResponse response,HttpServletRequest request, PageModel model) throws IOException {
+    protected void writeView(HttpServletResponse response,HttpServletRequest request, PageModel model) throws IOException {
         Template template = templateCfg.getTemplate(model.getTemplateName());
         response.setContentType("text/html");
         try {
@@ -142,16 +148,16 @@ public class AbstractController extends HttpServlet {
 
     protected <T extends AbstractController> void delegateGet(Class<T> controllerClass,
                                                               HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-
         AbstractController controller = getInjector().getInstance(controllerClass);
-        controller.doGet(req, resp);
+        
+        controller.onGet(req, resp);
     }
 
     protected <T extends AbstractController> void delegatePost(Class<T> controllerClass,
                                                                HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-
         AbstractController controller = getInjector().getInstance(controllerClass);
-        controller.doPost(req, resp);
+        
+        controller.onPost(req, resp);
     }
 
     String parseUrlSuffix(HttpServletRequest req) {

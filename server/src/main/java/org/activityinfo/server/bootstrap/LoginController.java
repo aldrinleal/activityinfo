@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 
 import org.activityinfo.login.server.LoginServiceServlet;
 import org.activityinfo.login.shared.LoginException;
@@ -24,25 +25,21 @@ import com.google.inject.Singleton;
 import freemarker.template.Configuration;
 
 @Singleton
+@Path(LoginController.ENDPOINT)
 public class LoginController extends AbstractController {
     public static final String ENDPOINT = "/login";
 
-    private final LoginServiceServlet loginService;
-    
     @Inject
-    public LoginController(Injector injector, Configuration templateCfg, MailSender sender, LoginServiceServlet loginService) {
-        super(injector, templateCfg);
-        this.loginService = loginService;
-    }
+    private LoginServiceServlet loginService;
 
     @Override
     @LogException(emailAlert = true)
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void onGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		writeView(resp, req, new LoginPageModel(parseUrlSuffix(req)));
     }
 
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+	protected void onPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		boolean ajax = "true".equals(req.getParameter("ajax"));
 		try {

@@ -9,27 +9,24 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 
-import org.activityinfo.server.bootstrap.LoginController;
 import org.activityinfo.server.bootstrap.model.LoginPageModel;
 import org.activityinfo.server.mail.MailSender;
 import org.junit.Before;
 import org.junit.Test;
 
-public class LoginControllerTest extends ControllerTestCase {
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
 
+public class LoginControllerTest extends ControllerTestCase<LoginController> {
     @Before
     public void setUp() {
-    	MailSender sender = createMock(MailSender.class);
     	replay(sender);
     	
-        controller = new LoginController(injector, templateCfg, sender, null);
-
         req.setRequestURL("http://activityinfo.org/login");
     }
 

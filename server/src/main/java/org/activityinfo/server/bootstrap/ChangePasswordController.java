@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 
 import org.activityinfo.server.authentication.AuthCookieUtil;
 import org.activityinfo.server.bootstrap.exception.IncompleteFormException;
@@ -16,25 +17,16 @@ import org.activityinfo.server.database.hibernate.entity.Authentication;
 import org.activityinfo.server.database.hibernate.entity.User;
 import org.activityinfo.server.util.logging.LogException;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
-import freemarker.template.Configuration;
-
 @Singleton
+@Path(ChangePasswordController.ENDPOINT)
 public class ChangePasswordController extends AbstractController {
-
 	public static final String ENDPOINT = "/changePassword";
 
-	@Inject
-	public ChangePasswordController(Injector injector, Configuration templateCfg) {
-		super(injector, templateCfg);
-	}
-
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void onGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException, ServletException {
         try {
             User user = findUserByKey(req.getQueryString());
 
@@ -47,8 +39,7 @@ public class ChangePasswordController extends AbstractController {
 	}
     @Override
     @LogException(emailAlert = true)
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+    protected void onPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         User user = null;
         try {
             user = findUserByKey(req.getParameter("key"));

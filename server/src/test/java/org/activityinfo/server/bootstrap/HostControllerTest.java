@@ -5,8 +5,6 @@
 
 package org.activityinfo.server.bootstrap;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.Properties;
 
@@ -19,39 +17,52 @@ import org.activityinfo.server.util.config.DeploymentConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
-public class HostControllerTest extends ControllerTestCase {
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
 
-	
-    @Before
+public class HostControllerTest extends ControllerTestCase<HostController> {
+	private static final DeploymentConfiguration DEPLOYMENT_CFG = new DeploymentConfiguration(new Properties());
+
+	protected Module getContainerModule() {
+		return Modules.combine(new CoreContainerModule(), new SingleControllerModule(HostController.class) {
+			@Override
+			protected void configure() {
+				super.configure();
+				
+				bind(DeploymentConfiguration.class).toInstance(DEPLOYMENT_CFG);
+			}
+		});
+	}
+
+	@Before
     public void setupController() {
-        controller = new HostController(injector, templateCfg, new DeploymentConfiguration(new Properties()));
         req.setRequestURL("http://www.activityinfo.org");
     }
 
-    @Test
-    public void verifyThatRequestsWithoutAuthTokensAreRedirectedToLoginPage() throws IOException, ServletException {
+	@Test
+	public void verifyThatRequestsWithoutAuthTokensAreRedirectedToLoginPage() throws IOException, ServletException {
 
-        get();
+		get();
 
-        assertTemplateUsed(LoginPageModel.class);
-    }
+		assertTemplateUsed(LoginPageModel.class);
+	}
 
-    @Test
-    public void verifyThatRequestWithValidAuthTokensReceiveTheView() throws IOException, ServletException {
-        req.addCookie(AuthenticatedUser.AUTH_TOKEN_COOKIE, GOOD_AUTH_TOKEN);
+	@Test
+	public void verifyThatRequestWithValidAuthTokensReceiveTheView() throws IOException, ServletException {
+		req.addCookie(AuthenticatedUser.AUTH_TOKEN_COOKIE, GOOD_AUTH_TOKEN);
 
-        get();
+		get();
 
-        assertTemplateUsed(HostPageModel.class);
-    }
+		assertTemplateUsed(HostPageModel.class);
+	}
 
-    @Test
-    public void verifyThatRequestWithFakeAuthTokensAreRedirectedToLogin() throws IOException, ServletException {
-        req.addCookie(AuthenticatedUser.AUTH_TOKEN_COOKIE, BAD_AUTH_TOKEN);
+	@Test
+	public void verifyThatRequestWithFakeAuthTokensAreRedirectedToLogin() throws IOException, ServletException {
+		req.addCookie(AuthenticatedUser.AUTH_TOKEN_COOKIE, BAD_AUTH_TOKEN);
 
-        get();
+		get();
 
-        assertTemplateUsed(LoginPageModel.class);
-    }
+		assertTemplateUsed(LoginPageModel.class);
+	}
 
 }
