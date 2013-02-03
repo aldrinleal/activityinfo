@@ -68,7 +68,7 @@ public class AbstractController {
 	 * longer - We hate warnings
 	 */
 	Response callGet(@Context HttpServletRequest req) throws Exception {
-		return (Response) MethodUtils.invokeMethod(this, "onGet", req);
+		return (Response) this.getClass().getDeclaredMethod("onGet", HttpServletRequest.class).invoke(this, req);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class AbstractController {
 	 * longer - We hate warnings
 	 */
 	Response callPost(@Context HttpServletRequest req) throws Exception {
-		return (Response) MethodUtils.invokeMethod(this, "onPost", req);
+		return (Response) this.getClass().getDeclaredMethod("onPost", HttpServletRequest.class).invoke(this, req);
 	}
 
 	protected Response writeView(HttpServletRequest request, PageModel model)
