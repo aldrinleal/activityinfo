@@ -8,6 +8,7 @@ package org.activityinfo.shared.report.model;
 import java.io.Serializable;
 
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeUri;
 
 /**
  * A generic bitmap icon that can be used on the client or server side,
@@ -141,5 +142,9 @@ public final class MapIcon implements Serializable, ImageResource {
 		Fire,
 		Food,
 		Water
+	}
+
+	public SafeUri getSafeUri() {
+		return null;
 	}
 }

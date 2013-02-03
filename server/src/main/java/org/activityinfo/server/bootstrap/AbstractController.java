@@ -9,32 +9,33 @@ import java.io.IOException;
 import java.util.Locale;
 
 import javax.persistence.NoResultException;
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.activityinfo.server.authentication.AuthCookieUtil;
 import org.activityinfo.server.bootstrap.exception.IncompleteFormException;
 import org.activityinfo.server.bootstrap.exception.InvalidKeyException;
 import org.activityinfo.server.bootstrap.model.PageModel;
+import org.activityinfo.server.bootstrap.model.TemplateDirective;
 import org.activityinfo.server.database.hibernate.dao.AuthenticationDAO;
 import org.activityinfo.server.database.hibernate.dao.Transactional;
 import org.activityinfo.server.database.hibernate.dao.UserDAO;
 import org.activityinfo.server.database.hibernate.entity.Authentication;
 import org.activityinfo.server.database.hibernate.entity.User;
 import org.activityinfo.shared.exception.InvalidLoginException;
+import org.apache.commons.beanutils.MethodUtils;
 
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Singleton;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
-
 
 /**
  * Serves either the initial login page, or the GWT host page depending on
@@ -43,158 +44,164 @@ import freemarker.template.TemplateException;
  * The servlet uses FreeMarker (http://www.freemarker.org) to generate content
  * based on the templates in /war/ftl
  * <p/>
- * Using a static login page, rather than incorporating login into the
- * app itself simplifies the app a bit, allows browsers to remember username/passwords,
- * and allows us to load the correct, localized, permutation of ActivityInfo depending
- * on the user's choice of locale.
- *
+ * Using a static login page, rather than incorporating login into the app
+ * itself simplifies the app a bit, allows browsers to remember
+ * username/passwords, and allows us to load the correct, localized, permutation
+ * of ActivityInfo depending on the user's choice of locale.
+ * 
  * @author Alex Bertram
  */
-@Singleton
-public class AbstractController extends HttpServlet {
+public class AbstractController {
+	@Inject
+	protected Injector injector;
 
-    private final Injector injector;
-    private final Configuration templateCfg;
+	@Inject
+	protected Configuration templateCfg;
 
-    private static final String GWT_CODE_SERVER_HOST = "gwt.codesvr";
+	private static final String GWT_CODE_SERVER_HOST = "gwt.codesvr";
 
-    @Inject
-    public AbstractController(Injector injector, Configuration templateCfg) {
-        this.injector = injector;
-        this.templateCfg = templateCfg;
-    }
+	@Context
+	protected Locale locale;
 
-    /**
-     * Calls doGet. Wrapped in package visibility for testing.
-     */
-    void callGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        doGet(req, resp);
-    }
+	/**
+	 * Calls doGet. Used to be wrapped in package visibilty for testing. No
+	 * longer - We hate warnings
+	 */
+	Response callGet(@Context HttpServletRequest req) throws Exception {
+		return (Response) MethodUtils.invokeMethod(this, "onGet", req);
+	}
 
-    /**
-     * Calls doPost. Wrapped in package visibilty for testing.
-     */
-    void callPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        doPost(req, resp);
-    }
+	/**
+	 * Calls doPost. Used to be wrapped in package visibilty for testing. No
+	 * longer - We hate warnings
+	 */
+	Response callPost(@Context HttpServletRequest req) throws Exception {
+		return (Response) MethodUtils.invokeMethod(this, "onPost", req);
+	}
 
-	protected void writeView(HttpServletResponse response,HttpServletRequest request, PageModel model) throws IOException {
-        Template template = templateCfg.getTemplate(model.getTemplateName());
-        response.setContentType("text/html");
-        try {
-            template.process(model, response.getWriter());
-			String language = getCookie(request, "locale");
-			template.setLocale(new Locale(language == null ? "en" : language));
-        } catch (TemplateException e) {
-            response.setContentType("text/plain");
-            e.printStackTrace(response.getWriter());
-        }
-    }
+	protected Response writeView(HttpServletRequest request, PageModel model)
+			throws IOException {
+		Template template = templateCfg.getTemplate(model.getTemplateName());
 
-    protected String getCookie(HttpServletRequest request, String name) {
-        if (request.getCookies() == null) {
-            return null;
-        }
+		if (null != locale)
+			template.setLocale(locale);
 
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(name)) {
-                return cookie.getValue();
-            }
-        }
-        return null;
-    }
+		return Response.ok(new TemplateDirective(template, model),
+				MediaType.TEXT_HTML).build();
+	}
 
-    protected void removeCookie(HttpServletResponse response, String name) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-    }
+	protected String getCookie(HttpServletRequest request, String name) {
+		if (request.getCookies() == null) {
+			return null;
+		}
 
+		for (Cookie cookie : request.getCookies()) {
+			if (cookie.getName().equals(name)) {
+				return cookie.getValue();
+			}
+		}
+		return null;
+	}
 
-    protected void assertParameterPresent(String value) {
-        if (value == null || value.length() == 0) {
-            throw new IncompleteFormException();
-        }
-    }
+	protected void removeCookie(HttpServletResponse response, String name) {
+		Cookie cookie = new Cookie(name, "");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+	}
 
-    protected User findUserByEmail(String email) throws InvalidLoginException {
-        try {
-            UserDAO userDAO = getInjector().getInstance(UserDAO.class);
-            return userDAO.findUserByEmail(email);
+	protected void assertParameterPresent(String value) {
+		if (value == null || value.length() == 0) {
+			throw new IncompleteFormException();
+		}
+	}
 
-        } catch (NoResultException e) {
-            throw new InvalidLoginException();
-        }
-    }
+	protected User findUserByEmail(String email) throws InvalidLoginException {
+		try {
+			UserDAO userDAO = getInjector().getInstance(UserDAO.class);
+			return userDAO.findUserByEmail(email);
 
-    protected void createAuthCookie(HttpServletRequest req, HttpServletResponse resp, User user, boolean remember) throws IOException {
-        Authentication auth = createNewAuthToken(user);
-        AuthCookieUtil.addAuthCookie(resp, auth, remember);
-    }
+		} catch (NoResultException e) {
+			throw new InvalidLoginException();
+		}
+	}
 
-    @Transactional
-    protected Authentication createNewAuthToken(User user) {
-        Authentication auth = new Authentication(user);
-        AuthenticationDAO authDAO = getInjector().getInstance(AuthenticationDAO.class);
-        authDAO.persist(auth);
-        return auth;
-    }
+	protected void createAuthCookie(HttpServletRequest req,
+			ResponseBuilder resp, User user, boolean remember)
+			throws IOException {
+		Authentication auth = createNewAuthToken(user);
+		AuthCookieUtil.addAuthCookie(resp, auth, remember);
+	}
 
-    protected <T extends AbstractController> void delegateGet(Class<T> controllerClass,
-                                                              HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+	@Transactional
+	protected Authentication createNewAuthToken(User user) {
+		Authentication auth = new Authentication(user);
+		AuthenticationDAO authDAO = getInjector().getInstance(
+				AuthenticationDAO.class);
+		authDAO.persist(auth);
+		return auth;
+	}
 
-        AbstractController controller = getInjector().getInstance(controllerClass);
-        controller.doGet(req, resp);
-    }
+	// protected <T extends AbstractController> void delegateGet(Class<T>
+	// controllerClass,
+	// HttpServletRequest req, HttpServletResponse resp) throws IOException,
+	// ServletException {
+	// AbstractController controller =
+	// getInjector().getInstance(controllerClass);
+	//
+	// controller.onGet(req);
+	// }
+	//
+	// protected <T extends AbstractController> void delegatePost(Class<T>
+	// controllerClass,
+	// HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	// AbstractController controller =
+	// getInjector().getInstance(controllerClass);
+	//
+	// controller.onPost(req);
+	// }
 
-    protected <T extends AbstractController> void delegatePost(Class<T> controllerClass,
-                                                               HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+	String parseUrlSuffix(HttpServletRequest req) {
+		StringBuilder sb = new StringBuilder();
+		if (req.getParameter(GWT_CODE_SERVER_HOST) != null
+				&& req.getParameter(GWT_CODE_SERVER_HOST).length() != 0) {
+			sb.append("?" + GWT_CODE_SERVER_HOST + "=").append(
+					req.getParameter(GWT_CODE_SERVER_HOST));
+		}
 
-        AbstractController controller = getInjector().getInstance(controllerClass);
-        controller.doPost(req, resp);
-    }
+		int hash = req.getRequestURL().lastIndexOf("#");
+		if (hash != -1) {
+			sb.append(req.getRequestURL().substring(hash));
+		}
+		return sb.toString();
+	}
 
-    String parseUrlSuffix(HttpServletRequest req) {
-        StringBuilder sb = new StringBuilder();
-        if (req.getParameter(GWT_CODE_SERVER_HOST) != null && req.getParameter(GWT_CODE_SERVER_HOST).length() != 0) {
-            sb.append("?" + GWT_CODE_SERVER_HOST + "=").append(req.getParameter(GWT_CODE_SERVER_HOST));
-        }
+	protected final String getRequiredParameter(HttpServletRequest request,
+			String name) {
+		String value = request.getParameter(name);
+		if (Strings.isNullOrEmpty(value)) {
+			throw new IncompleteFormException();
+		}
 
-        int hash = req.getRequestURL().lastIndexOf("#");
-        if (hash != -1) {
-            sb.append(req.getRequestURL().substring(hash));
-        }
-        return sb.toString();
-    }
+		return value;
+	}
 
+	@Transactional
+	protected User findUserByKey(String key) throws InvalidKeyException {
+		try {
+			if (key == null || key.length() == 0) {
+				throw new InvalidKeyException();
+			}
 
-    protected final String getRequiredParameter(HttpServletRequest request, String name) {
-        String value = request.getParameter(name);
-        if (Strings.isNullOrEmpty(value)) {
-            throw new IncompleteFormException();
-        }
-
-        return value;
-    }
-
-
-    @Transactional
-    protected User findUserByKey(String key) throws InvalidKeyException {
-        try {
-            if (key == null || key.length() == 0) {
-                throw new InvalidKeyException();
-            }
-
-            UserDAO userDAO = getInjector().getInstance(UserDAO.class);
-            User user = userDAO.findUserByChangePasswordKey(key);
-            if(user == null) {
-            	throw new InvalidKeyException();
-            }
-            return user;
-        } catch (NoResultException e) {
-            throw new InvalidKeyException();
-        }
-    }
+			UserDAO userDAO = getInjector().getInstance(UserDAO.class);
+			User user = userDAO.findUserByChangePasswordKey(key);
+			if (user == null) {
+				throw new InvalidKeyException();
+			}
+			return user;
+		} catch (NoResultException e) {
+			throw new InvalidKeyException();
+		}
+	}
 
 	protected Injector getInjector() {
 		return injector;
