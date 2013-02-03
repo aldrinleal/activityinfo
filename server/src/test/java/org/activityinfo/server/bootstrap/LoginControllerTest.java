@@ -5,55 +5,61 @@
 
 package org.activityinfo.server.bootstrap;
 
-import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 
-import javax.servlet.ServletException;
-
+import org.activityinfo.server.bootstrap.fixtures.MockHttpServletResponse;
 import org.activityinfo.server.bootstrap.model.LoginPageModel;
-import org.activityinfo.server.mail.MailSender;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
 
 public class LoginControllerTest extends ControllerTestCase<LoginController> {
-    @Before
-    public void setUp() {
-    	replay(sender);
-    	
-        req.setRequestURL("http://activityinfo.org/login");
-    }
+	MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 
-    @Test
-    public void requestShouldReceiveView() throws IOException, ServletException {
+	@Override
+	protected Module getContainerModule() {
+		return Modules.combine(new AbstractModule() {
+			@Override
+			protected void configure() {
+				bind(HttpServletResponse.class).toInstance(mockResponse);
+			}
+		}, super.getContainerModule());
+	}
 
-        get();
+	@Before
+	public void setUp() {
+		replay(sender);
 
-        assertNull(resp.redirectUrl);
-        assertTemplateUsed(LoginPageModel.class);
-    }
+		req.setRequestURL("http://activityinfo.org/login");
+	}
 
-    @Test
-    public void urlSuffixIsParsedCorrectly() throws IOException, ServletException {
+	@Test
+	public void requestShouldReceiveView() throws Exception {
+		get();
 
-        get("http://activityinfo.org/login#charts");
+		assertTemplateUsed(LoginPageModel.class);
+	}
 
-        assertEquals("#charts", controller.parseUrlSuffix(req));
-    }
+	@Test
+	public void urlSuffixIsParsedCorrectly() throws Exception {
 
-    @Test
-    public void bookmarkShouldBeIncludedInModel() throws IOException, ServletException {
+		get("http://activityinfo.org/login#charts");
 
-        get("http://activityinfo.org/login#charts");
+		assertEquals("#charts", controller.parseUrlSuffix(req));
+	}
 
-        assertNull(resp.redirectUrl);
-        assertTemplateUsed(LoginPageModel.class);
-        assertEquals("#charts", lastLoginPageModel().getUrlSuffix());
-    }
+	@Test
+	public void bookmarkShouldBeIncludedInModel() throws Exception {
+
+		get("http://activityinfo.org/login#charts");
+
+		assertTemplateUsed(LoginPageModel.class);
+		assertEquals("#charts", lastLoginPageModel().getUrlSuffix());
+	}
 }

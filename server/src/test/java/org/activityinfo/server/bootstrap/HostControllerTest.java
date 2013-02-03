@@ -5,10 +5,7 @@
 
 package org.activityinfo.server.bootstrap;
 
-import java.io.IOException;
 import java.util.Properties;
-
-import javax.servlet.ServletException;
 
 import org.activityinfo.login.shared.AuthenticatedUser;
 import org.activityinfo.server.bootstrap.model.HostPageModel;
@@ -40,7 +37,7 @@ public class HostControllerTest extends ControllerTestCase<HostController> {
     }
 
 	@Test
-	public void verifyThatRequestsWithoutAuthTokensAreRedirectedToLoginPage() throws IOException, ServletException {
+	public void verifyThatRequestsWithoutAuthTokensAreRedirectedToLoginPage() throws Exception {
 
 		get();
 
@@ -48,7 +45,7 @@ public class HostControllerTest extends ControllerTestCase<HostController> {
 	}
 
 	@Test
-	public void verifyThatRequestWithValidAuthTokensReceiveTheView() throws IOException, ServletException {
+	public void verifyThatRequestWithValidAuthTokensReceiveTheView() throws Exception {
 		req.addCookie(AuthenticatedUser.AUTH_TOKEN_COOKIE, GOOD_AUTH_TOKEN);
 
 		get();
@@ -57,7 +54,7 @@ public class HostControllerTest extends ControllerTestCase<HostController> {
 	}
 
 	@Test
-	public void verifyThatRequestWithFakeAuthTokensAreRedirectedToLogin() throws IOException, ServletException {
+	public void verifyThatRequestWithFakeAuthTokensAreRedirectedToLogin() throws Exception {
 		req.addCookie(AuthenticatedUser.AUTH_TOKEN_COOKIE, BAD_AUTH_TOKEN);
 
 		get();

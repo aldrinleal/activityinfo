@@ -1,6 +1,10 @@
 package org.activityinfo.login.server;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.NoResultException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -55,7 +59,27 @@ public class LoginServiceServlet extends RemoteServiceServlet implements LoginSe
 
 	private AuthenticatedUser createAuthCookie(User user, boolean rememberLogin) {
         Authentication auth = createNewAuthToken(user);
-        AuthCookieUtil.addAuthCookie(response.get(), auth, rememberLogin);
+        
+        /*
+         * We're 'inlining the code in AuthCookieUtil.addAuthCookie
+         */
+        {
+        	HttpServletResponse resp = response.get();
+        	final int maxAge = rememberLogin ? AuthCookieUtil.THIRTY_DAYS : AuthCookieUtil.THIS_SESSION;
+        	
+        	Collection<Cookie> cookiesToAdd = new ArrayList<Cookie>();
+        	
+        	cookiesToAdd.add(new Cookie(AuthenticatedUser.AUTH_TOKEN_COOKIE, auth.getId()));
+        	cookiesToAdd.add(new Cookie(AuthenticatedUser.USER_ID_COOKIE,String.valueOf(auth.getUser().getId())));
+        	cookiesToAdd.add(new Cookie(AuthenticatedUser.EMAIL_COOKIE,auth.getUser().getEmail()));
+
+			for (Cookie c : cookiesToAdd) {
+				c.setMaxAge(maxAge);
+				
+				resp.addCookie(c);
+			}
+        }
+        
 		return new AuthenticatedUser(auth.getId(), auth.getUser().getId(), auth.getUser().getEmail());
 	}
 

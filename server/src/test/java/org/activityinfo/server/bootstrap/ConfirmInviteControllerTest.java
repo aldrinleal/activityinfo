@@ -11,13 +11,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-
 import org.activityinfo.server.bootstrap.model.ConfirmInvitePageModel;
 import org.activityinfo.server.bootstrap.model.InvalidInvitePageModel;
-import org.junit.Before;
 import org.junit.Test;
 
 public class ConfirmInviteControllerTest extends ControllerTestCase<ConfirmInviteController> {
@@ -29,8 +24,7 @@ public class ConfirmInviteControllerTest extends ControllerTestCase<ConfirmInvit
     }
 
     @Test
-    public void requestWithValidKeyShouldGetView() throws IOException, ServletException {
-
+    public void requestWithValidKeyShouldGetView() throws Exception {
         req.setQueryString(NEW_USER_KEY);
 
         get();
@@ -40,7 +34,7 @@ public class ConfirmInviteControllerTest extends ControllerTestCase<ConfirmInvit
     }
 
     @Test
-    public void badKeyShouldGetProblemPage() throws IOException, ServletException {
+    public void badKeyShouldGetProblemPage() throws Exception {
 
         req.setQueryString(BAD_KEY);
 
@@ -50,7 +44,7 @@ public class ConfirmInviteControllerTest extends ControllerTestCase<ConfirmInvit
     }
 
     @Test
-    public void passwordShouldBeSetAfterNewUserCompletion() throws IOException, ServletException {
+    public void passwordShouldBeSetAfterNewUserCompletion() throws Exception {
 
         fillOutForm();
 
@@ -65,7 +59,7 @@ public class ConfirmInviteControllerTest extends ControllerTestCase<ConfirmInvit
     }
 
     @Test
-    public void emptyPasswordShouldNotBeAccepted() throws IOException, ServletException {
+    public void emptyPasswordShouldNotBeAccepted() throws Exception {
 
         fillOutForm();
         req.setParameter("password", "");

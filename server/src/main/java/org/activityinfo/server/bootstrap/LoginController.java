@@ -5,61 +5,70 @@
 
 package org.activityinfo.server.bootstrap;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.activityinfo.login.server.LoginServiceServlet;
+import org.activityinfo.login.shared.AuthenticatedUser;
 import org.activityinfo.login.shared.LoginException;
 import org.activityinfo.server.bootstrap.model.LoginPageModel;
-import org.activityinfo.server.mail.MailSender;
+import org.activityinfo.server.bootstrap.model.Redirect;
 import org.activityinfo.server.util.logging.LogException;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Singleton;
 
-import freemarker.template.Configuration;
-
-@Singleton
 @Path(LoginController.ENDPOINT)
 public class LoginController extends AbstractController {
     public static final String ENDPOINT = "/login";
 
     @Inject
     private LoginServiceServlet loginService;
-
-    @Override
+    
+    @GET
     @LogException(emailAlert = true)
-    protected void onGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		writeView(resp, req, new LoginPageModel(parseUrlSuffix(req)));
+    public Response onGet(@Context HttpServletRequest req) throws Exception {
+		return writeView(req, new LoginPageModel(parseUrlSuffix(req)));
     }
 
-	@Override
-	protected void onPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+    @POST
+    @LogException(emailAlert = true)
+	public Response onPost(@Context HttpServletRequest req) throws Exception {
 		boolean ajax = "true".equals(req.getParameter("ajax"));
+		ResponseBuilder response = Response.ok();
+		
 		try {
-			loginService.login(req.getParameter("email"), req.getParameter("password"), 
+			AuthenticatedUser user = loginService.login(req.getParameter("email"), req.getParameter("password"), 
 					false);
-			if(ajax) {
-				resp.setStatus(HttpServletResponse.SC_OK);
-			} else {
-				resp.sendRedirect("/");
-			}
+			addLocaleCookie(response, user);
+			if(!ajax)
+				response = Response.ok(new Redirect("/"));
 		} catch (LoginException e) {
 			if(ajax) {
-				resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+				response.status(HttpServletResponse.SC_BAD_REQUEST);
 			} else {
-				writeView(resp, req,
+				return writeView(req,
 						LoginPageModel.unsuccessful(parseUrlSuffix(req)));
 			}
 		}
+		
+		return response.build();
 	}
-    
-    
 
+	/**
+	 * Adds the user's locale as a cookie, so that we preserve the right
+	 * language even after they log out.
+	 * @param response
+	 * @param user
+	 */
+	private void addLocaleCookie(ResponseBuilder response,
+			AuthenticatedUser user) {
+		response.cookie(new NewCookie("locale", user.getUserLocale(), "/", null, null, 60 * 60 * 24 * 365, false));
+	}
 }
