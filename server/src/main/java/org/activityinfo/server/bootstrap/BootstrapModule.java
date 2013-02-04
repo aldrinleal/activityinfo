@@ -31,24 +31,17 @@ public class BootstrapModule extends ServletModule {
         serve("/ActivityInfo/ActivityInfo.appcache").with(SelectionServlet.class);
         serve("/ActivityInfo/ActivityInfo.gears.manifest").with(SelectionServlet.class);
         
+        bind(HostController.class, LoginController.class, ConfirmInviteController.class, LogoutController.class, ResetPasswordController.class, ChangePasswordController.class);
+
         Map<String, String> initParams = new TreeMap<String, String>();
         
-        filterContainer(initParams, HostController.class, LoginController.class, ConfirmInviteController.class, LogoutController.class, ResetPasswordController.class, ChangePasswordController.class);
+        initParams.put("com.sun.jersey.config.property.WebPageContentRegex", "/.*\\.(jpg|ico|png|gif|html|id|txt|css|js)");
+        
+		filter("/*").through(GuiceContainer.class, initParams);
     }
 
-	private void filterContainer(Map<String, String> params, Class<?>... endpointClasses) {
-		for (Class<?> c : endpointClasses) {
+	private void bind(Class<?>... endpointClasses) {
+		for (Class<?> c : endpointClasses)
 			bind(c);
-			
-			String path = null;
-			
-			try {
-				path = (String) c.getField("ENDPOINT").get(null);
-			} catch (Exception exc) {
-				throw new RuntimeException(exc);
-			}
-			
-			filter(path).through(GuiceContainer.class, params);
-		}
 	}
 }
