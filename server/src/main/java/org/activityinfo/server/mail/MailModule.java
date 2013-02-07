@@ -11,6 +11,12 @@ public class MailModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(MailSender.class).to(MailSenderImpl.class);
+    	boolean notGae = null != System.getProperty("gae.disable");
+    	
+    	if (notGae) {
+    		bind(MailSender.class).to(CommonMailSenderImpl.class);
+    	} else {
+    		bind(MailSender.class).to(MailSenderImpl.class);
+    	}
     }
 }
