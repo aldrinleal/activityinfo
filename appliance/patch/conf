@@ -1,8 +1,24 @@
 #!/bin/bash -ex
 
 # set up mysql database
+
+echo Starting MySQL
+
 service mysql start
-mysql --user=root --password=$MYSQL_PASS < /usr/lib/activityinfo/activityinfo-initial-2.6.18.sql
+
+echo Creating Database
+
+mysqladmin -h 127.0.0.1 -uroot CREATE activityinfo
+
+echo Loading Database
+
+gzip -dc /usr/lib/activityinfo/activityinfo-initial-2.6.18.sql.gz | \
+  mysql -h 127.0.0.1 -uroot activityinfo
+
+echo Performing Grants
+
+echo "GRANT ALL PRIVILEGES ON activityinfo.* TO 'activityinfo'@'localhost' IDENTIFIED BY 'activityinfo'" | mysql -h 127.0.0.1 -uroot
+
 service mysql stop
 
 
@@ -10,10 +26,10 @@ service mysql stop
 rm -rf /var/lib/tomcat6/webapps/ROOT
 mkdir /var/lib/tomcat6/webapps/ROOT
 cd /var/lib/tomcat6/webapps/ROOT
-wget http://nexus.bedatadriven.com/content/groups/public/org/activityinfo/activityinfo-server/2.6.25/activityinfo-server-2.6.25.war -O ai.war
+cp /root/ai.war .
+#wget http://nexus.bedatadriven.com/content/groups/public/org/activityinfo/activityinfo-server/2.6.25/activityinfo-server-2.6.25.war -O ai.war
 jar -xf ai.war 
 
 # Clean up files we don't need to copy
 rm ai.war
-rm /usr/lib/activityinfo/activityinfo-initial-2.6.18.sql
 

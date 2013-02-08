@@ -3,3 +3,6 @@ target/
 RemoteSystemsTempFiles/
 .settings
 .project
+.classpath
+appliance/patch/overlay/root
+appliance/patch/overlay/var
