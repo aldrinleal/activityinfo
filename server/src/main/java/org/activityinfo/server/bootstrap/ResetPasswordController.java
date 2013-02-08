@@ -10,11 +10,15 @@ import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.activityinfo.server.authentication.SecureTokenGenerator;
 import org.activityinfo.server.bootstrap.model.ResetPasswordPageModel;
 import org.activityinfo.server.database.hibernate.dao.Transactional;
@@ -41,11 +45,12 @@ public class ResetPasswordController extends AbstractController {
 	}
 
 	@POST
-    @LogException(emailAlert = true)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@LogException(emailAlert = true)
     @Transactional
-    public Response onPost(@Context HttpServletRequest req) throws ServletException, IOException {
+    public Response onPost(@Context HttpServletRequest req, @FormParam("email") String email) throws ServletException, IOException {
         try {
-            User user = findUserByEmail(req.getParameter("email"));
+            User user = findUserByEmail(email);
             user.setChangePasswordKey(SecureTokenGenerator.generate());
             user.setDateChangePasswordKeyIssued(new Date());
             

@@ -4,12 +4,16 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+
 import org.activityinfo.server.authentication.AuthCookieUtil;
 import org.activityinfo.server.bootstrap.exception.IncompleteFormException;
 import org.activityinfo.server.bootstrap.exception.InvalidKeyException;
@@ -39,11 +43,12 @@ public class ChangePasswordController extends AbstractController {
 	}
 	
 	@POST
-    @LogException(emailAlert = true)
-    public Response onPost(@Context HttpServletRequest req) throws IOException, ServletException {
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@LogException(emailAlert = true)
+    public Response onPost(@Context HttpServletRequest req, @FormParam("key") String key) throws IOException, ServletException {
         User user = null;
         try {
-            user = findUserByKey(req.getParameter("key"));
+            user = findUserByKey(key);
         } catch (InvalidKeyException e) {
 			return writeView(req, new InvalidInvitePageModel());
         }

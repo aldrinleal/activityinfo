@@ -6,10 +6,13 @@
 package org.activityinfo.server.bootstrap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -43,11 +46,12 @@ public class ConfirmInviteController extends AbstractController {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @LogException(emailAlert = true)
-    public Response onPost(@Context HttpServletRequest req) throws Exception {
+    public Response onPost(@Context HttpServletRequest req, @FormParam("key") String key) throws Exception {
         User user = null;
         try {
-            user = findUserByKey(req.getParameter("key"));
+            user = findUserByKey(key);
         } catch (InvalidKeyException e) {
 			return writeView(req, new InvalidInvitePageModel());
         }

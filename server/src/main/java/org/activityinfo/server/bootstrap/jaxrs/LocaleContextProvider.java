@@ -31,7 +31,7 @@ public class LocaleContextProvider extends
 			language = DEFAULT_LANGUAGE;
 		}
 		
-		return Locale.forLanguageTag(language);
+		return new Locale(language);
 	}
 
 	private String languageFromHeader(HttpRequestContext request) {
