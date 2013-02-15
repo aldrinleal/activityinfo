@@ -1,6 +1,6 @@
 <#macro scaffolding title>
-
 <!DOCTYPE html>
+
 <html>
 <head>
   <title>ActivityInfo - Login</title>
@@ -26,11 +26,10 @@
                 </a>
                <div class="pull-right">
 		         <ul class="upper nav">
-		          <li class="language english active"><a href="/">en</a></li>
-		          <li class="language french"><a href="/">fr</a></li> 
+		          <li  class="language <#if lang="en">active</#if>"><a href="">en</a></li>
+		          <li  class="language <#if lang="fr">active</#if>"><a href="">fr</a></li> 
 		         </ul>
 		        </div>	
-		
               </nav>
             </div>
           </div>
@@ -63,6 +62,7 @@
   <script src="http://code.jquery.com/jquery-latest.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script>
+	 
   		$('.language').click(function() {
   			var language = $(this).text();
   			var now = new Date();
@@ -70,6 +70,8 @@
    			document.cookie="locale" + "=" + language +";expires=" + now.toUTCString();
 			
 	 	});
+	 	
+	 	
   </script>
   <#nested>
 </#macro>

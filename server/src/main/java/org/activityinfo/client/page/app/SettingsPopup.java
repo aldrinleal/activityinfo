@@ -6,11 +6,11 @@ import org.activityinfo.client.EventBus;
 import org.activityinfo.client.SessionUtil;
 import org.activityinfo.client.authentication.ClientSideAuthProvider;
 import org.activityinfo.client.i18n.I18N;
-import org.activityinfo.client.offline.OfflineController;
-import org.activityinfo.client.offline.OfflineStateChangeEvent;
-import org.activityinfo.client.offline.OfflineStateChangeEvent.State;
-import org.activityinfo.client.offline.sync.SyncCompleteEvent;
-import org.activityinfo.client.offline.sync.SyncStatusEvent;
+import org.activityinfo.client.local.LocalController;
+import org.activityinfo.client.local.LocalStateChangeEvent;
+import org.activityinfo.client.local.LocalStateChangeEvent.State;
+import org.activityinfo.client.local.sync.SyncCompleteEvent;
+import org.activityinfo.client.local.sync.SyncStatusEvent;
 
 import org.activityinfo.client.Log;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -81,11 +81,11 @@ public class SettingsPopup extends PopupPanel {
 	
 	private EventBus eventBus;
 	
-	private OfflineStateChangeEvent.State state = State.CHECKING;
+	private LocalStateChangeEvent.State state = State.CHECKING;
 
-	private OfflineController offlineController;
+	private LocalController offlineController;
 	
-	public SettingsPopup(EventBus eventBus, OfflineController offlineController) {
+	public SettingsPopup(EventBus eventBus, LocalController offlineController) {
 		this.eventBus = eventBus;
 		this.offlineController = offlineController;
 		
@@ -118,10 +118,10 @@ public class SettingsPopup extends PopupPanel {
 			}
 
 		});
-		eventBus.addListener(OfflineStateChangeEvent.TYPE, new Listener<OfflineStateChangeEvent>() {
+		eventBus.addListener(LocalStateChangeEvent.TYPE, new Listener<LocalStateChangeEvent>() {
 
 			@Override
-			public void handleEvent(OfflineStateChangeEvent be) {
+			public void handleEvent(LocalStateChangeEvent be) {
 				onOfflineStatusChange(be.getState());
 			}
 		});

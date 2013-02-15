@@ -18,17 +18,17 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class AllSearcher {
 	private static Map<DimensionType, Searcher> searchers = new HashMap<DimensionType, Searcher>();
 	private List<Searcher> failedSearchers = new ArrayList<Searcher>();
-	private Filter filter = new Filter();
+	private Filter filter = new Filter(true); // create lenient filter - we want to have a wide search
 	
 	private final SqlTransaction tx;
 	
 	static {
 		searchers.put(DimensionType.Partner, new GenericSearcher(DimensionType.Partner));
 		searchers.put(DimensionType.Project, new GenericSearcher(DimensionType.Project));
-		searchers.put(DimensionType.AttributeGroup, new GenericSearcher(DimensionType.AttributeGroup));
+		// searchers.put(DimensionType.AttributeGroup, new GenericSearcher(DimensionType.AttributeGroup));
 		searchers.put(DimensionType.Location, new LocationSearcher());
 		searchers.put(DimensionType.AdminLevel, new AdminEntitySearcher());
-		//searchers.add(new SiteSearcher());
+		// searchers.add(new SiteSearcher());
 		searchers.put(DimensionType.Indicator, new IndicatorSearcher());
 	}
 	

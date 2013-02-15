@@ -296,12 +296,14 @@ public class GetSchemaHandler implements
 							}
 							parentFound = true;
 						}
-						if (!row.isNull("projectID")) {
+						if (!row.isNull("projectId")) {
 							Integer projectId = row.getInt("projectId");
 							ProjectDTO project = projects.get(projectId);
-							project.getLockedPeriods().add(lockedPeriod);
-							lockedPeriod.setParent(project);
-							parentFound = true;
+							if(project != null) {
+								project.getLockedPeriods().add(lockedPeriod);
+								lockedPeriod.setParent(project);
+								parentFound = true;
+							}
 						}
 
 						if (!parentFound) {
@@ -356,10 +358,9 @@ public class GetSchemaHandler implements
 					.leftJoin(Tables.PARTNER, "p")
 					.on("d.PartnerId = p.PartnerId");
 
-			if (!GWT.isClient()) {
-				// on the server, limit the partners to those that are visible
-				// to
-				// the connected user
+	        // Only allow results that are visible to this user if we are on the server, 
+	        // otherwise permissions have already been taken into account during synchronization
+	        if (context.isRemote()) {
 				query.where("d.databaseId").in(databaseMap.keySet());
 			}
 
@@ -394,7 +395,7 @@ public class GetSchemaHandler implements
 							"reportingFrequency", "databaseId", "published")
 					.from("activity").orderBy("SortOrder");
 
-			if (!GWT.isClient()) {
+			if (context.isRemote()) {
 				query.where("DateDeleted IS NULL");
 				query.where("DatabaseId").in(databaseMap.keySet());
 			}
@@ -427,7 +428,7 @@ public class GetSchemaHandler implements
 							"description", "aggregation", "units", "activityId")
 					.from("indicator").orderBy("SortOrder");
 
-			if (!GWT.isClient()) {
+			if (context.isRemote()) {
 				query.where("DateDeleted IS NULL");
 				query.where("activityId").in(
 						SqlQuery.select("ActivityId").from("activity")
@@ -464,7 +465,7 @@ public class GetSchemaHandler implements
 					.appendColumn("multipleAllowed").from("attributegroup")
 					.orderBy("SortOrder");
 
-			if (!GWT.isClient()) {
+			if (context.isRemote()) {
 				query.where("DateDeleted IS NULL");
 				query.where("AttributeGroupId").in(
 						SqlQuery.select("AttributeGroupId")
@@ -496,7 +497,7 @@ public class GetSchemaHandler implements
 					.select("attributeId", "name", "attributeGroupId")
 					.from("attribute").orderBy("SortOrder");
 
-			if (!GWT.isClient()) {
+			if (context.isRemote()) {
 				query.where("DateDeleted IS NULL");
 				query.where("AttributeGroupId").in(
 						SqlQuery.select("AttributeGroupId")
@@ -534,7 +535,7 @@ public class GetSchemaHandler implements
 					.orderBy("G.SortOrder")
 					.where("G.dateDeleted").isNull();
 
-			if (!GWT.isClient()) {
+			if (context.isRemote()) {
 				query.where("ActivityId").in(
 						SqlQuery.select("ActivityId").from("activity")
 								.where("databaseId").in(databaseMap.keySet()));

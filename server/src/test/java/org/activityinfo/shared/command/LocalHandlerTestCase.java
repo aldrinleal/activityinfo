@@ -16,17 +16,16 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.activityinfo.client.client.offline.OfflineModuleStub;
 import org.activityinfo.client.dispatch.Dispatcher;
 import org.activityinfo.client.dispatch.remote.AbstractDispatcher;
 import org.activityinfo.client.i18n.UIConstants;
 import org.activityinfo.client.i18n.UIMessages;
-import org.activityinfo.client.offline.command.CommandQueue;
-import org.activityinfo.client.offline.command.LocalDispatcher;
-import org.activityinfo.client.offline.sync.SyncHistoryTable;
-import org.activityinfo.client.offline.sync.SynchronizerImpl;
-import org.activityinfo.client.offline.sync.pipeline.InstallPipeline;
-import org.activityinfo.client.offline.sync.pipeline.SyncPipeline;
+import org.activityinfo.client.local.LocalModuleStub;
+import org.activityinfo.client.local.command.CommandQueue;
+import org.activityinfo.client.local.command.LocalDispatcher;
+import org.activityinfo.client.local.sync.SyncHistoryTable;
+import org.activityinfo.client.local.sync.pipeline.InstallPipeline;
+import org.activityinfo.client.local.sync.pipeline.SyncPipeline;
 import org.activityinfo.server.authentication.AuthenticationModuleStub;
 import org.activityinfo.server.endpoint.gwtrpc.CommandServlet;
 import org.activityinfo.shared.command.result.CommandResult;
@@ -36,7 +35,6 @@ import org.activityinfo.test.Modules;
 import org.junit.After;
 import org.junit.Before;
 
-import org.activityinfo.client.Log;
 import com.bedatadriven.rebar.async.AsyncPipeline;
 import com.bedatadriven.rebar.sql.server.jdbc.JdbcDatabase;
 import com.bedatadriven.rebar.sql.server.jdbc.JdbcScheduler;
@@ -98,7 +96,7 @@ public abstract class LocalHandlerTestCase {
         remoteDispatcher = new RemoteDispatcherStub();
 
         Injector clientSideInjector = Guice.createInjector(
-        		new OfflineModuleStub(AuthenticationModuleStub.getCurrentUser(), 
+        		new LocalModuleStub(AuthenticationModuleStub.getCurrentUser(), 
         				localDatabase,
         				remoteDispatcher));
         localDispatcher = clientSideInjector.getInstance(LocalDispatcher.class);
