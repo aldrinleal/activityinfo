@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>activityinfo-server</artifactId>
 	<packaging>war</packaging>
@@ -30,10 +31,12 @@
 		<gae.application.version>2</gae.application.version>
 
 		<jersey.version>1.17</jersey.version>
+		<jackson.version>2.1.2</jackson.version>
 		<appengine.export.version>0.1.1-SNAPSHOT</appengine.export.version>
 	</properties>
 
 	<dependencies>
+
 
 
 		<!-- GWT deps (from central repo) -->
@@ -50,14 +53,14 @@
 			<version>${gwtVersion}</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		
+
+
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
 			<version>${gae.version}</version>
 		</dependency>
-				
+
 		<dependency>
 			<groupId>com.google.code.gaxb</groupId>
 			<artifactId>gaxb</artifactId>
@@ -92,18 +95,15 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
-			<version>1.2.2</version>
-		</dependency>
 
 		<!-- Report creation dependencies -->
 
 		<dependency>
 			<groupId>org.mindrot.bcrypt</groupId>
 			<artifactId>bcrypt</artifactId>
-			<version>0.3</version>
+			<version>
+				0.3
+			</version>
 		</dependency>
 
 		<dependency>
@@ -115,7 +115,7 @@
 			<groupId>com.bedatadriven.appengine.export</groupId>
 			<artifactId>appengine-awt</artifactId>
 			<version>${appengine.export.version}</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>com.bedatadriven.appengine.export</groupId>
 			<artifactId>appengine-ppt</artifactId>
@@ -125,18 +125,18 @@
 			<groupId>com.bedatadriven.appengine.export</groupId>
 			<artifactId>appengine-jcharts</artifactId>
 			<version>${appengine.export.version}</version>
-		</dependency>			
+		</dependency>
 		<dependency>
 			<groupId>com.bedatadriven.appengine.export</groupId>
 			<artifactId>appengine-emf</artifactId>
 			<version>${appengine.export.version}</version>
-		</dependency>		
+		</dependency>
 
-	 	<dependency>
-	      <groupId>com.mixpanel</groupId>
-	      <artifactId>mixpanel-java</artifactId>
-	      <version>1.1.0</version>
-	    </dependency>
+		<dependency>
+			<groupId>com.mixpanel</groupId>
+			<artifactId>mixpanel-java</artifactId>
+			<version>1.1.0</version>
+		</dependency>
 
 		<!-- Database dependencies -->
 
@@ -180,20 +180,20 @@
 			<artifactId>dozer</artifactId>
 			<version>5.1</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>com.vividsolutions</groupId>
-		    <artifactId>jts</artifactId>
-		    <version>1.12</version>
-		    <exclusions>
-		    	<!-- interferes with gwt-dev -->
-		    	<exclusion>
-		    		<groupId>xerces</groupId>
-		    		<artifactId>xercesImpl</artifactId>
-		    	</exclusion>
-		    </exclusions>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+			<version>1.12</version>
+			<exclusions>
+				<!-- interferes with gwt-dev -->
+				<exclusion>
+					<groupId>xerces</groupId>
+					<artifactId>xercesImpl</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker-gae</artifactId>
@@ -324,37 +324,71 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
 		</dependency>
-		
+
 		<dependency>
-		    <groupId>org.ow2.asm</groupId>
-		    <artifactId>asm</artifactId>
-		    <version>4.1</version>
-		    <scope>test</scope>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>4.1</version>
+			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-guice</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
+
 		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-json</artifactId>
-			<version>${jersey.version}</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-scala_2.9.1</artifactId>
+			<version>2.1.3</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.3.31</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.wordnik</groupId>
 			<artifactId>swagger-jaxrs_2.9.1</artifactId>
 			<version>1.2.0</version>
 		</dependency>
-  	</dependencies>
+		
+		<dependency>
+			<groupId>com.wordnik</groupId>
+			<artifactId>swagger-core_2.9.1</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<resources>
@@ -399,7 +433,7 @@
 					<jvmFlags>
 						<jvmFlag>-Xmx256m</jvmFlag>
 					</jvmFlags>
-                  	<serverId>appengine.google.com</serverId>
+					<serverId>appengine.google.com</serverId>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -420,32 +454,14 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.liquibase</groupId>
-				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>2.0.2-bdd</version>
-				<configuration>
-					<driver>com.mysql.jdbc.Driver</driver>
-					<changeLogFile>org/activityinfo/database/changelog/db.changelog-master.xml</changeLogFile>
-				</configuration>
-				<executions>
-					<execution>
-						<id>prep-test-database</id>
-						<goals>
-							<goal>dropAll</goal>
-							<goal>update</goal>
-						</goals>
-					
-						<phase>test-compile</phase> 
-						<configuration>
-							<dropFirst>true</dropFirst>
-							<url>${testDatabaseUrl}</url>
-							<username>${testDatabaseUsername}</username>
-							<password>${testDatabasePassword}</password>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- <plugin> <groupId>org.liquibase</groupId> <artifactId>liquibase-maven-plugin</artifactId> 
+				<version>2.0.2-bdd</version> <configuration> <driver>com.mysql.jdbc.Driver</driver> 
+				<changeLogFile>org/activityinfo/database/changelog/db.changelog-master.xml</changeLogFile> 
+				</configuration> <executions> <execution> <id>prep-test-database</id> <goals> 
+				<goal>dropAll</goal> <goal>update</goal> </goals> <phase>test-compile</phase> 
+				<configuration> <dropFirst>true</dropFirst> <url>${testDatabaseUrl}</url> 
+				<username>${testDatabaseUsername}</username> <password>${testDatabasePassword}</password> 
+				</configuration> </execution> </executions> </plugin> -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -780,7 +796,7 @@
 	</reporting>
 
 	<profiles>
-	<profile>
+		<profile>
 			<id>production</id>
 			<properties>
 				<display.version>2.7 Build ${BUILD_NUMBER}</display.version>

@@ -22,9 +22,9 @@ import javax.ws.rs.core.UriInfo;
 
 import org.activityinfo.server.database.hibernate.entity.AdminEntity;
 import org.activityinfo.server.database.hibernate.entity.AdminLevel;
+import org.activityinfo.server.util.jaxrs.JSONWithPadding;
 import org.activityinfo.server.util.logging.LogSlow;
 import org.apache.commons.codec.language.DoubleMetaphone;
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -35,7 +35,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
-import com.sun.jersey.api.json.JSONWithPadding;
 import com.sun.jersey.api.view.Viewable;
 
 
